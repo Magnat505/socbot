@@ -8,7 +8,7 @@ const config = require('./config')
 const utils = require('./utils')
 
 const app = express()
-const bot = new TelegramBot('1780915784:AAG_ODGdaFlM9QePZTAODnFX0f2dZ_fs08o')
+const bot = new TelegramBot("1780915784:AAG_ODGdaFlM9QePZTAODnFX0f2dZ_fs08o")
 
 const Users = require('./models/Users')
 
@@ -19,7 +19,7 @@ let mailFileId = ''
 let mailKeyboard = []
 
 app.use(express.json())
-app.post(`/bot${'1780915784:AAG_ODGdaFlM9QePZTAODnFX0f2dZ_fs08o'}`, (req, res) => {
+app.post(`/bot${"1780915784:AAG_ODGdaFlM9QePZTAODnFX0f2dZ_fs08o"}`, (req, res) => {
     bot.processUpdate(req.body)
     res.sendStatus(201)
 })
