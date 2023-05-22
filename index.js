@@ -8,7 +8,7 @@ const config = require('./config')
 const utils = require('./utils')
 
 const app = express()
-const bot = new TelegramBot("1780915784:AAG_ODGdaFlM9QePZTAODnFX0f2dZ_fs08o")
+const bot = new TelegramBot(config.token)
 
 const Users = require('./models/Users')
 
@@ -19,7 +19,7 @@ let mailFileId = ''
 let mailKeyboard = []
 
 app.use(express.json())
-app.post(`/bot${"1780915784:AAG_ODGdaFlM9QePZTAODnFX0f2dZ_fs08o"}`, (req, res) => {
+app.post(`/bot${config.token}`, (req, res) => {
     bot.processUpdate(req.body)
     res.sendStatus(201)
 })
@@ -46,7 +46,7 @@ bot.on('message', async msg => {
             await bot.sendDocument(fromId, path.join(__dirname, 'database', 'users.json'))
             return
         }
-        if (fromId === Number("986787968")) {
+        if (fromId === Number(config.admin)) {
             if (msg.text && msg.text === '/start') {
                 admin_state = null
                 mailType = ''
@@ -201,15 +201,15 @@ bot.on('message', async msg => {
                 await msg.send_photo(utils.homeMedia, utils.homeText, utils.homeMarkup)
                 return msg.send(`Оформляем?`)
             }
-            await bot.sendMessage("986787968", `Пользователь <a href="tg://user?id=${fromId}">${user.first_name}</a> ответил на вашу форму.`, {parse_mode: 'HTML'})
+            await bot.sendMessage(config.admin, `Пользователь <a href="tg://user?id=${fromId}">${user.first_name}</a> ответил на вашу форму.`, {parse_mode: 'HTML'})
             if (msg.text) {
-                await bot.sendMessage("986787968", msg.text)
+                await bot.sendMessage(config.admin, msg.text)
             }
             if (msg.photo) {
-                await bot.sendPhoto("986787968", msg.photo[msg.photo.length-1].file_id, {caption: msg.caption})
+                await bot.sendPhoto(config.admin, msg.photo[msg.photo.length-1].file_id, {caption: msg.caption})
             }
             if (msg.video) {
-                await bot.sendPhoto("986787968", msg.video.file_id, {caption: msg.caption})
+                await bot.sendPhoto(config.admin, msg.video.file_id, {caption: msg.caption})
             }
             user.state = null
             user.asked = true
@@ -242,7 +242,7 @@ bot.on('callback_query', async query => {
             caption, parse_mode: 'HTML',
             reply_markup: {inline_keyboard: kb}
         })
-        if (fromId === Number("986787968")) {
+        if (fromId === Number(config.admin)) {
             if (admin_state && admin_state === 'on_kb') {
                 if (query.data === 'skip') {
                     admin_state = 'on_preview'
@@ -327,11 +327,11 @@ bot.on('callback_query', async query => {
 
 async function start() {
     try {
-        await mongoose.connect("mongodb+srv://aki_kh:akbarshoh@cluster0.k6xvr.mongodb.net/soccarta-bot?retryWrites=true&w=majority", {
+        await mongoose.connect(config.db, {
             useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true
         })
         await Users.deleteMany({left: true})
-        app.listen("80", () => {
+        app.listen(config.port, () => {
             console.log('Server is running')
         })
     } catch (e) {
